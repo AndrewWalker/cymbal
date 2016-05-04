@@ -1,28 +1,34 @@
-import cymbal
+import os
 import unittest
+import clang
+import clang.cindex
+clang.cindex.conf.set_library_path('.')
+import cymbal
+cymbal.monkey_patch()
 
-
-class TestPaths(unittest.TestCase):
+class TestClangExtension(unittest.TestCase):
 
     def parse(self, contents):
         idx = clang.cindex.Index.create()
-        names = 'tmp.cpp'
-        tu = idx.parse(name, unsaved_files=[(name, contents)], args=['-std=c++11'])
+        name = 'tmp.cpp'
+        tu = idx.parse(name, unsaved_files=[(name, contents)], args=['-x','c++','-std=c++11'])
         return tu
 
     def test_class_template_args(self):
         s = '''
-        template<typename U, typename V>
-        class foo { };
+        template<class T, class U>
+        class foo {};
 
-        foo<int, char> f();
+        foo<int,char> f();
         '''
         tu = self.parse(s)
-        for cursor in tu.cursor.walk_preorder():
-            if cursor.kind == clang.cindex.CursorKind.CLASS_TEMPLATE:
-                class_type = cursor.type
-                cnt = class_type.get_num_template_arguments()
-                for i in xrange(cnt):
-                    class_type.get_template_argument_type(i) 
+        for c in tu.cursor.walk_preorder():
+            if c.kind == clang.cindex.CursorKind.FUNCTION_DECL:
+                rt = c.result_type
+                self.assertEquals( 2, rt.get_num_template_arguments())
+                self.assertEquals( 'int', rt.get_template_argument_type(0).spelling )
+                self.assertEquals( 'char', rt.get_template_argument_type(1).spelling )
+         
 
-
+if __name__ == '__main__':
+    unittest.main()
