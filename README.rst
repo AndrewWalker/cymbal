@@ -33,8 +33,8 @@ template arguments.
     for cursor in tu.cursor.walk_preorder():
         class_type = cursor.type
         cnt = class_type.get_num_template_arguments()
-        for i in xrange(cnt):
-            print class_type.get_template_argument_type(i) 
+        for i in range(cnt):
+            print(class_type.get_template_argument_type(i))
 
 Installation
 ------------

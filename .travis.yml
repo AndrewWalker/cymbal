@@ -12,7 +12,8 @@ before_install:
     - echo "deb http://llvm.org/apt/trusty/ llvm-toolchain-trusty-3.8 main" | sudo tee -a /etc/apt/sources.list
     - sudo apt-get update -qq
     - sudo apt-get install -y python-clang-3.8 libclang1-3.8
-    - ln -s /usr/lib/python2.7/dist-packages/clang
+    - if [[ ${TRAVIS_PYTHON_VERSION%%.*} == '2' ]]; then ln -s /usr/lib/python2.7/dist-packages/clang; fi
+    - if [[ ${TRAVIS_PYTHON_VERSION%%.*} == '3' ]]; then pip install libclang-py3; fi
     - ln -s /usr/lib/llvm-3.8/lib/libclang-3.8.so.1 libclang-3.8.so
     - ln -s /usr/lib/llvm-3.8/lib/libclang.so.1 libclang.so
 install:
