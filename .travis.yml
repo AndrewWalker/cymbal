@@ -13,7 +13,8 @@ before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -y python-clang-3.8 libclang1-3.8
     - ln -s /usr/lib/python2.7/dist-packages/clang
-    - ln -s /usr/lib/llvm-3.8/lib/libclang-3.8.so.1 libclang.so
+    - ln -s /usr/lib/llvm-3.8/lib/libclang-3.8.so.1 libclang-3.8.so
+    - ln -s /usr/lib/llvm-3.8/lib/libclang.so.1 libclang.so
 install:
     - pip install -r requirements.txt
     - python setup.py install

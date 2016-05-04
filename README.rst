@@ -12,7 +12,7 @@ Usage
 -----
 
 Import libclang as normal, optionally configuring the path to the libclang
-shared-library, then import cymbal, which adds the appropriate monkey patches.
+shared-library, then import cymbal and apply the monkey patches.
 
 .. code:: python
 
@@ -20,6 +20,7 @@ shared-library, then import cymbal, which adds the appropriate monkey patches.
     # optionally 
     clang.cindex.conf.set_library_file('/path/to/libclang')
     import cymbal
+    cymbal.monkey_patch()
 
 Once the monkey patches have been applied, additional methods will be
 available. For, the python libclang bindings omit functions to enumerate class
@@ -30,12 +31,10 @@ template arguments.
     idx = clang.cindex.Index.create()
     tu = idx.parse('sample.cpp', args=['-std=c++11']) 
     for cursor in tu.cursor.walk_preorder():
-        if cursor.kind == clang.cindex.CursorKind.CLASS_TEMPLATE:
-            class_type = cursor.type
-            print class_type.spelling
-            cnt = class_type.get_num_template_arguments()
-            for i in xrange(cnt):
-                print class_type.get_template_argument_type(i) 
+        class_type = cursor.type
+        cnt = class_type.get_num_template_arguments()
+        for i in xrange(cnt):
+            print class_type.get_template_argument_type(i) 
 
 Installation
 ------------
