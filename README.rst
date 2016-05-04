@@ -17,14 +17,16 @@ shared-library, then import cymbal and apply the monkey patches.
 .. code:: python
 
     import clang.cindex
+    
     # optionally 
     clang.cindex.conf.set_library_file('/path/to/libclang')
+
     import cymbal
     cymbal.monkey_patch()
 
 Once the monkey patches have been applied, additional methods will be
 available. For, the python libclang bindings omit functions to enumerate class
-template arguments. 
+template arguments that cymbal injects. 
 
 .. code:: python
 
@@ -57,7 +59,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
    :target: https://travis-ci.org/AndrewWalker/cymbal
    :alt: Continuous Integration
 
-.. |coverage| image:: https://coveralls.io/repos/github/AndrewWalker/symbal/badge.svg?branch=master
-   :target: https://coveralls.io/github/AndrewWalker/symbal?branch=master
+.. |coverage| image:: https://coveralls.io/repos/github/AndrewWalker/cymbal/badge.svg?branch=master
+   :target: https://coveralls.io/github/AndrewWalker/cymbal?branch=master
    :alt: Coverage Testing Results
 
