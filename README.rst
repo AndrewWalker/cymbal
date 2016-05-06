@@ -23,20 +23,21 @@ annotations as necessary.
 .. code:: python
 
     import clang.cindex
+    from clang.cindex import *
     import cymbal
     from ctypes import *
 
     # add functions omitted from the pip installable clang packages on OSX
 
-    f = cymbal.monkeypatch_type('clang_Type_getTemplateArgumentAsType',
-                                'get_template_argument_type')
-    f.argtypes = [clang.cindex.Type, c_uint]
-    f.restype = clang.cindex.Type
+    cymbal.monkeypatch_type('get_template_argument_type',
+                            'clang_Type_getTemplateArgumentAsType',
+                            [Type, c_uint],
+                            Type)
 
-    g = cymbal.monkeypatch_type('clang_Type_getNumTemplateArguments',
-                                'get_num_template_arguments')
-    g.argtypes = [clang.cindex.Type]
-    g.restype = c_int
+    cymbal.monkeypatch_type('get_num_template_arguments',
+                            'clang_Type_getNumTemplateArguments',
+                            [Type],
+                            c_int)
 
 
 Requirements

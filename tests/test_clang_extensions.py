@@ -1,7 +1,7 @@
 import unittest
 from ctypes import *
-import clang
 import clang.cindex
+from clang.cindex import Cursor, Type
 import cymbal
 
 class TestClangExtension(unittest.TestCase):
@@ -13,21 +13,24 @@ class TestClangExtension(unittest.TestCase):
         return tu
 
     def test_fails_to_add(self):
+        # This function will already be present, it should fail
         with self.assertRaises(cymbal.CymbalException):
-            f = cymbal.monkeypatch_type('ignored',
-                                        'get_declaration')
+            f = cymbal.monkeypatch_type('get_declaration', 
+                                        'clang_getTypeDeclaration',
+                                        [Type],
+                                        Cursor)
         
     def test_class_template_args(self):
 
-        f = cymbal.monkeypatch_type('clang_Type_getTemplateArgumentAsType',
-                                    'get_template_argument_type')
-        f.argtypes = [clang.cindex.Type, c_uint]
-        f.restype = clang.cindex.Type
+        cymbal.monkeypatch_type('get_template_argument_type',
+                                'clang_Type_getTemplateArgumentAsType',
+                                [Type, c_uint],
+                                Type)
 
-        g = cymbal.monkeypatch_type('clang_Type_getNumTemplateArguments',
-                                    'get_num_template_arguments')
-        g.argtypes = [clang.cindex.Type]
-        g.restype = c_int
+        cymbal.monkeypatch_type('get_num_template_arguments',
+                                'clang_Type_getNumTemplateArguments',
+                                [Type],
+                                c_int)
 
         s = '''
         template<class T, class U>
