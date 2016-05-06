@@ -11,7 +11,7 @@ def read(filename):
 setup(
     name         = "cymbal",
     version      = "1.0",
-    description  = "Extensions for libclang",
+    description  = "Helps you add functionality missing from libclang Python bindings",
     long_description = read('README.rst'),
     author       = "Andrew Walker",
     author_email = "walker.ab@gmail.com",

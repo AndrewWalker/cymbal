@@ -1,53 +1,65 @@
-cymbol
+Cymbal
 ======
 
-**cymbol adds functionality missing from the python libclang bindings**
+Overview
+--------
 
-This project builds on the work of the LLVM team and the University of Illinois
-at Urbana-Champaign, but is no way affiliated with either group.
+Cymbal makes it easy to add functionality missing from libclang Python bindings
+
+The Clang `libclang python bindings` use `ctypes`_ to invoke functions present
+in libclang dynamic library.  In some cases, only a subset of the C functions
+are available, because the platform or version specific Python bindings omit
+functions.  Cymbal simplfies the process of dynamically adding those methods to
+Types and Cursors.
 
 |license| |build| |coverage|
 
 Usage
 -----
 
-Import libclang as normal, optionally configuring the path to the libclang
-shared-library, then import cymbal and apply the monkey patches.
+Import Cymbal, monkeypatch any required functions, adding appropriate ctypes
+annotations as necessary. 
 
 .. code:: python
 
     import clang.cindex
-    
-    # optionally 
-    clang.cindex.conf.set_library_file('/path/to/libclang')
-
     import cymbal
-    cymbal.monkey_patch()
+    from ctypes import *
 
-Once the monkey patches have been applied, additional methods will be
-available. For, the python libclang bindings omit functions to enumerate class
-template arguments that cymbal injects. 
+    # add functions omitted from the pip installable clang packages on OSX
 
-.. code:: python
+    f = cymbal.monkeypatch_type('clang_Type_getTemplateArgumentAsType',
+                                'get_template_argument_type')
+    f.argtypes = [clang.cindex.Type, c_uint]
+    f.restype = clang.cindex.Type
 
-    idx = clang.cindex.Index.create()
-    tu = idx.parse('sample.cpp', args=['-std=c++11']) 
-    for cursor in tu.cursor.walk_preorder():
-        class_type = cursor.type
-        cnt = class_type.get_num_template_arguments()
-        for i in range(cnt):
-            print(class_type.get_template_argument_type(i))
+    g = cymbal.monkeypatch_type('clang_Type_getNumTemplateArguments',
+                                'get_num_template_arguments')
+    g.argtypes = [clang.cindex.Type]
+    g.restype = c_int
 
-Installation
+
+Requirements
 ------------
+
+The only requirements are libclang and the python bindings for libclang.
 
 Contributing
 ------------
 
-If you experience problems with cymbal, `log them on GitHub`_. If you
+If you experience problems with Cymbal, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
+Licensing
+---------
+
+This project builds on the work of the LLVM team and the University of Illinois
+at Urbana-Champaign, but is no way affiliated with either group.
+
+.. _libclang: http://clang.llvm.org/doxygen/group__CINDEX.html
+.. _libclang python bindings: https://github.com/llvm-mirror/clang/tree/master/bindings/python
 .. _log them on Github: https://github.com/AndrewWalker/cymbal/issues
+.. _ctypes: https://docs.python.org/2/library/ctypes.html
 .. _fork the code: https://github.com/AndrewWalker/cymbal
 .. _submit a pull request: https://github.com/AndrewWalker/cymbal/pulls
 

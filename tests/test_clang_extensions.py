@@ -1,10 +1,8 @@
-import os
 import unittest
+from ctypes import *
 import clang
 import clang.cindex
-clang.cindex.conf.set_library_path('.')
 import cymbal
-cymbal.monkey_patch()
 
 class TestClangExtension(unittest.TestCase):
 
@@ -14,13 +12,30 @@ class TestClangExtension(unittest.TestCase):
         tu = idx.parse(name, unsaved_files=[(name, contents)], args=['-x','c++','-std=c++11'])
         return tu
 
+    def test_fails_to_add(self):
+        with self.assertRaises(cymbal.CymbalException):
+            f = cymbal.monkeypatch_type('ignored',
+                                        'get_declaration')
+        
     def test_class_template_args(self):
+
+        f = cymbal.monkeypatch_type('clang_Type_getTemplateArgumentAsType',
+                                    'get_template_argument_type')
+        f.argtypes = [clang.cindex.Type, c_uint]
+        f.restype = clang.cindex.Type
+
+        g = cymbal.monkeypatch_type('clang_Type_getNumTemplateArguments',
+                                    'get_num_template_arguments')
+        g.argtypes = [clang.cindex.Type]
+        g.restype = c_int
+
         s = '''
         template<class T, class U>
         class foo {};
 
         foo<int,char> f();
         '''
+
         tu = self.parse(s)
         for c in tu.cursor.walk_preorder():
             if c.kind == clang.cindex.CursorKind.FUNCTION_DECL:
