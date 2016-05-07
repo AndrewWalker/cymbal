@@ -10,11 +10,13 @@ def read(filename):
 
 setup(
     name         = "cymbal",
-    version      = "1.0",
+    version      = "1.0.0",
     description  = "Helps you add functionality missing from libclang Python bindings",
     long_description = read('README.rst'),
     author       = "Andrew Walker",
     author_email = "walker.ab@gmail.com",
+    maintainer   = "Andrew Walker",
+    maintainer_email = "walker.ab@gmail.com",
     url          = "http://github.com/AndrewWalker/cymbal",
     license      = "MIT",
     packages     = find_packages(), 
